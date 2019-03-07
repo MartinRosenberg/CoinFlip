@@ -30,16 +30,16 @@ object Main extends IOApp {
     _        <- printGameState(newState)
   } yield newState
 
-  def main(state: GameState, random: Random): IO[Unit] = for {
+  def mainLoop(state: GameState, random: Random): IO[Unit] = for {
     input <- getUserInput
     _     <- input match {
       case guess: Side => for {
         newState <- handleGuess(state, random, guess)
-        _        <- main(newState, random)
+        _        <- mainLoop(newState, random)
       } yield ()
       case Invalid => for {
         _ <- println("Invalid selection.")
-        _ <- main(state, random)
+        _ <- mainLoop(state, random)
       } yield ()
       case Quit => for {
         _ <- println("\n=== GAME OVER ===")
@@ -52,7 +52,7 @@ object Main extends IOApp {
     _ <- println("COIN FLIP\nWhy are you wasting your time on this?™")
     s =  GameState(0, 0)
     r =  new Random
-    _ <- main(s, r)
+    _ <- mainLoop(s, r)
   } yield ExitCode.Success
 
 }
