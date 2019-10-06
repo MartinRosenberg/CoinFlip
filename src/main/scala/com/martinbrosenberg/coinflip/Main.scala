@@ -1,58 +1,65 @@
 package com.martinbrosenberg.coinflip
 
-import cats.effect.{ExitCode, IO, IOApp}
-import com.martinbrosenberg.coinflip.Input._
 import com.martinbrosenberg.coinflip.Input.Side._
+import com.martinbrosenberg.coinflip.Input._
+import scalaz.zio.console._
+import scalaz.zio.random._
+import scalaz.zio.{App, ZIO}
+import scala.util.control.Exception.catching
 
-import scala.io.StdIn.readLine
-import scala.util.Random
+object Main extends App {
 
-object Main extends IOApp {
+  val whatever: Either[Exception, Int] = Either("hello".toInt)
 
-  val getUserInput: IO[Input] = IO(
-    readLine("\n(h)eads, (t)ails, or (q)uit: ").trim.headOption.map(_.toLower).map {
-      case 'h' => Heads
-      case 't' => Tails
-      case 'q' => Quit
-      case  _  => Invalid
-    }.getOrElse(Invalid)
-  )
+  val getUserInput: ZIO[Console, Exception, Input] =
+    for {
+      _  <- putStr("\n(h)eads, (t)ails, or (q)uit: ")
+      in <- getChar
+    } yield Input(in)
 
-  def printGameState(gameState: GameState): IO[Unit] =
-    println(s"#Flips: ${gameState.numFlips}, #Correct: ${gameState.numCorrect}")
+  def printGameState(state: GameState): ZIO[Console, Nothing, Unit] =
+    putStrLn(s"#Flips: ${state.numFlips}, #Correct: ${state.numCorrect}")
 
-  def flipCoin(r: Random): IO[Side] = IO(if (r.nextBoolean()) Heads else Tails)
+  val flipCoin: ZIO[Random, Nothing, Side] =
+    nextBoolean.map(if (_) Heads else Tails)
 
-  def handleGuess(state: GameState, random: Random, guess: Side): IO[GameState] = for {
-    flip     <- flipCoin(random)
-    newState =  state.addFlip(guess, flip)
-    _        <- print(s"Flip was $flip. ")
-    _        <- printGameState(newState)
-  } yield newState
+  def handleGuess(state: GameState, guess: Side): ZIO[Console with Random, Nothing, GameState] =
+    for {
+      flip     <- flipCoin
+      newState =  state.addFlip(guess, flip)
+      _        <- putStr(s"Flip was $flip. ")
+      _        <- printGameState(newState)
+    } yield newState
 
-  def mainLoop(state: GameState, random: Random): IO[Unit] = for {
-    input <- getUserInput
-    _     <- input match {
-      case guess: Side => for {
-        newState <- handleGuess(state, random, guess)
-        _        <- mainLoop(newState, random)
-      } yield ()
-      case Invalid => for {
-        _ <- println("Invalid selection.")
-        _ <- mainLoop(state, random)
-      } yield ()
-      case Quit => for {
-        _ <- println("\n=== GAME OVER ===")
-        _ <- printGameState(state)
-      } yield ()
-    }
-  } yield ()
+  def mainLoop(state: GameState): ZIO[Environment, Nothing, Unit] =
+    for {
+      input <- getUserInput.fold(_ => Invalid, identity)
+      _     <- input match {
+        case guess: Side => for {
+          newState <- handleGuess(state, guess)
+          _        <- mainLoop(newState)
+        } yield ()
+        case Invalid => for {
+          _ <- putStrLn("Invalid selection.")
+          _ <- mainLoop(state)
+        } yield ()
+        case Quit => for {
+          _ <- putStrLn("\n=== GAME OVER ===")
+          _ <- printGameState(state)
+        } yield ()
+      }
+    } yield ()
 
-  override def run(args: List[String]): IO[ExitCode] = for {
-    _ <- println("COIN FLIP\nWhy are you wasting your time on this?™")
-    s =  GameState(0, 0)
-    r =  new Random
-    _ <- mainLoop(s, r)
-  } yield ExitCode.Success
+  def mainLoop2(state: GameState): ZIO[Environment, Nothing, Unit] =
+    for {
+      n <- nextInt
+      _ <- mainLoop2(state)
+    } yield ()
+
+  override def run(args: List[String]): ZIO[Main.Environment, Nothing, Int] =
+    (for {
+      _ <- putStrLn("COIN FLIP\nWhy are you wasting your time on this?™")
+      _ <- mainLoop2(GameState(0, 0))
+    } yield ()).fold(_ => 1, _ => 0)
 
 }

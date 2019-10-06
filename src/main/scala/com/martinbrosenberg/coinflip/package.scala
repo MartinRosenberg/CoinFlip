@@ -1,10 +1,17 @@
 package com.martinbrosenberg
 
-import cats.effect.IO
+import java.io.IOException
+
+import scalaz.zio.IO
+
+import scala.io.StdIn
 
 package object coinflip {
 
-  def print(obj: Any): IO[Unit] = IO(Console.print(obj))
-  def println(obj: Any): IO[Unit] = IO(Console.println(obj))
+  val getChar: IO[Exception, Char] =
+    IO(StdIn.readChar).refineOrDie {
+      case e: IOException => e
+      case e: IndexOutOfBoundsException => e
+    }
 
 }

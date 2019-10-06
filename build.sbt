@@ -5,6 +5,7 @@ lazy val root = (project in file("."))
     version := "0.0.1-SNAPSHOT",
     scalaVersion := "2.12.8",
     libraryDependencies ++= Seq(
+      "org.scalaz"          %% "scalaz-zio"   % "0.11",
       ("org.typelevel"      %% "cats-effect"  % "1.2.0").withSources().withJavadoc(),
       // Testing
       "com.github.dwickern" %% "scala-nameof" % "1.0.3"  % "provided",
