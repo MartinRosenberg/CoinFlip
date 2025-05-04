@@ -12,11 +12,10 @@ object Main extends IOApp {
   val getUserInput: IO[Input] = IO(
     readLine("\n(h)eads, (t)ails, or (q)uit: ").trim.headOption
       .map(_.toLower)
-      .map {
+      .collect {
         case 'h' => Heads
         case 't' => Tails
         case 'q' => Quit
-        case _   => Invalid
       }
       .getOrElse(Invalid)
   )
