@@ -1,8 +1,6 @@
-package com.martinbrosenberg.coinflip
-
+import Input.*
+import Input.Side.*
 import cats.effect.{ExitCode, IO, IOApp}
-import com.martinbrosenberg.coinflip.Input._
-import com.martinbrosenberg.coinflip.Input.Side._
 
 import scala.io.StdIn.readLine
 import scala.util.Random

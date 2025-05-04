@@ -1,5 +1,3 @@
-package com.martinbrosenberg.coinflip
-
 case class GameState(numFlips: Int, numCorrect: Int) {
 
   def addFlip(guess: Input, flip: Input): GameState =

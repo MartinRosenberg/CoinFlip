@@ -2,6 +2,7 @@ lazy val root = (project in file("."))
   .settings(
     organization := "com.martinbrosenberg",
     name := "CoinFlip",
+    idePackagePrefix := Some("com.martinrosenberg.coinflip"),
     version := "0.0.1-SNAPSHOT",
     scalaVersion := "3.6.4",
     libraryDependencies ++= Seq(

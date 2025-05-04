@@ -1,4 +1,3 @@
-package com.martinbrosenberg.coinflip
 
 sealed trait Input
 object Input {
