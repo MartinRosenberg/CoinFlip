@@ -1,4 +1,4 @@
-package com.martinrosenberg.coinflip
+package com.martinbrosenberg.coinflip
 
 import Input.*
 import Input.Side.{Heads, Tails}

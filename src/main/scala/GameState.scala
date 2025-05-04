@@ -1,4 +1,4 @@
-package com.martinrosenberg.coinflip
+package com.martinbrosenberg.coinflip
 
 case class GameState(numFlips: Int, numCorrect: Int) {
 

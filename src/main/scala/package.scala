@@ -1,4 +1,4 @@
-package com.martinrosenberg.coinflip
+package com.martinbrosenberg.coinflip
 
 import cats.effect.IO
 
