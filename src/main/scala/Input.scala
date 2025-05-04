@@ -1,7 +1,6 @@
-
 sealed trait Input
 object Input {
-  case object Quit extends Input
+  case object Quit    extends Input
   case object Invalid extends Input
 
   sealed trait Side extends Input
