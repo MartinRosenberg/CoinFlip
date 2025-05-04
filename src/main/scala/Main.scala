@@ -22,7 +22,9 @@ object Main extends IOApp {
   )
 
   def printGameState(gameState: GameState): IO[Unit] =
-    println(s"#Flips: ${gameState.numFlips}, #Correct: ${gameState.numCorrect}")
+    IO.println(
+      s"#Flips: ${gameState.numFlips}, #Correct: ${gameState.numCorrect}"
+    )
 
   def flipCoin(r: Random): IO[Side] = IO(if (r.nextBoolean()) Heads else Tails)
 
@@ -33,7 +35,7 @@ object Main extends IOApp {
   ): IO[GameState] = for {
     flip    <- flipCoin(random)
     newState = state.addFlip(guess, flip)
-    _       <- print(s"Flip was $flip. ")
+    _       <- IO.print(s"Flip was $flip. ")
     _       <- printGameState(newState)
   } yield newState
 
@@ -47,19 +49,19 @@ object Main extends IOApp {
                  } yield ()
                case Invalid     =>
                  for {
-                   _ <- println("Invalid selection.")
+                   _ <- IO.println("Invalid selection.")
                    _ <- mainLoop(state, random)
                  } yield ()
                case Quit        =>
                  for {
-                   _ <- println("\n=== GAME OVER ===")
+                   _ <- IO.println("\n=== GAME OVER ===")
                    _ <- printGameState(state)
                  } yield ()
              }
   } yield ()
 
   override def run(args: List[String]): IO[ExitCode] = for {
-    _ <- println("COIN FLIP\nWhy are you wasting your time on this?™")
+    _ <- IO.println("COIN FLIP\nWhy are you wasting your time on this?™")
     s  = GameState(0, 0)
     r  = new Random
     _ <- mainLoop(s, r)
