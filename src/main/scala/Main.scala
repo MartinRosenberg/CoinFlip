@@ -1,3 +1,5 @@
+package com.martinrosenberg.coinflip
+
 import Input.*
 import Input.Side.{Heads, Tails}
 import cats.effect.{ExitCode, IO, IOApp}

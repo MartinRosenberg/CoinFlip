@@ -1,3 +1,5 @@
+package com.martinrosenberg.coinflip
+
 sealed trait Input
 object Input {
   case object Quit    extends Input
